@@ -20,6 +20,7 @@ import (
 	"obas/io/institutions"
 	"obas/io/users"
 	"obas/io/util"
+	util2 "obas/util"
 	"time"
 	//usersIO "obas/io/users"
 )
@@ -30,6 +31,7 @@ func Admin(app *config.Env) http.Handler {
 	r.Get("/applicant", AdminApplicantHandler(app))
 	r.Get("/applicant/application/{userId}/{applicationId}", AdminApplicationDocumentsHandler(app))
 	r.Get("/application", AdminApplicationHandler(app))
+	r.Get("/budget", AdminBudgetHandler(app))
 
 	r.Post("/email", AdminEmailHandler(app))
 	r.Post("/change/document-status", ChangeDocumentStatusHandler(app))
@@ -38,6 +40,69 @@ func Admin(app *config.Env) http.Handler {
 	r.Get("/applicant/document/{applicationId}/{userId}", AdminApplicationDocumentHandler(app))
 
 	return r
+}
+
+func AdminBudgetHandler(app *config.Env) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		clearCash(w)
+		email := app.Session.GetString(r.Context(), "userId")
+		token := app.Session.GetString(r.Context(), "token")
+		fmt.Println(email, "<<<<<email||token>>>>>", token)
+
+		var completeApplications []applicationDomain.Application
+		if email == "" || token == "" {
+			http.Redirect(w, r, "/login", 301)
+			return
+		}
+		applications, err := applicationIO.GetApplications()
+		if err != nil {
+			app.InfoLog.Println("error reading")
+		}
+		//Getting all the approved application
+		completeApplications = getCompletedApplication(applications)
+
+		type Pagedate struct {
+			Tab          string
+			SubMenu      string
+			Applications []applicationDomain.Application
+		}
+		data := Pagedate{"budget", "", completeApplications}
+
+		files := []string{
+			app.Path + "/content/admin/admin_budget.html",
+			app.Path + "/content/admin/template/sidebar.template.html",
+			app.Path + "/content/admin/template/navbar.template.html",
+			app.Path + "/base/template/footer.template.html",
+		}
+		ts, err := template.ParseFiles(files...)
+		if err != nil {
+			app.ErrorLog.Println(err.Error())
+			//return
+		}
+		err = ts.Execute(w, data)
+		if err != nil {
+			app.ErrorLog.Println(err.Error())
+		}
+	}
+}
+
+//this method will return only the completed
+func getCompletedApplication(applications []applicationDomain.Application) []applicationDomain.Application {
+	var applicationVar []applicationDomain.Application
+	for _, value := range applications {
+		applicationStatues, err := applicationIO.GetApplicationStatus(value.Id)
+		if err != nil {
+			fmt.Println(err.Error(), "reading applicationStatues")
+		}
+		applicationStatus, err := util.GetStatus(applicationStatues.StatusId)
+		if err != nil {
+			fmt.Println(err.Error(), "error reading applicationStatus")
+		}
+		if applicationStatus.Name == util2.APPROVED {
+			applicationVar = append(applicationVar, value)
+		}
+	}
+	return applicationVar
 }
 
 func AdminApplicationDocumentHandler(app *config.Env) http.HandlerFunc {

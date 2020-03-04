@@ -6,36 +6,12 @@ import (
 	"obas/domain/budget"
 )
 
-const awardsURL = api.BASE_URL + "/awards/"
+const disbursementURL = api.BASE_URL + "/disbursement/"
 
-func CreateAwards(awards budget.Awards) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().SetBody(awards).Post(awardsURL + "create")
-	if resp.IsError() {
-		return entity, errors.New(resp.Status())
-	}
-	err := api.JSON.Unmarshal(resp.Body(), &entity)
-	if err != nil {
-		return entity, errors.New(resp.Status())
-	}
-	return entity, nil
-}
-func GetAward(awardId string) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().Get(awardsURL + "read/" + awardId)
-	if resp.IsError() {
-		return entity, errors.New(resp.Status())
-	}
-	err := api.JSON.Unmarshal(resp.Body(), &entity)
-	if err != nil {
-		return entity, errors.New(resp.Status())
-	}
-	return entity, nil
-}
+func CreateDisbursement(disbursement budget.Disbursement) (budget.Disbursement, error) {
+	entity := budget.Disbursement{}
 
-func GetAwards() ([]budget.Awards, error) {
-	entity := []budget.Awards{}
-	resp, _ := api.Rest().Get(awardsURL + "all")
+	resp, _ := api.Rest().SetBody(disbursement).Post(disbursementURL + "create")
 	if resp.IsError() {
 		return entity, errors.New(resp.Status())
 	}
@@ -45,9 +21,10 @@ func GetAwards() ([]budget.Awards, error) {
 	}
 	return entity, nil
 }
-func DeleteAwards(awards budget.Awards) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().SetBody(awards).Post(awardsURL + "delete")
+func DeleteDisbursement(disbursement budget.Disbursement) (budget.Disbursement, error) {
+	entity := budget.Disbursement{}
+
+	resp, _ := api.Rest().SetBody(disbursement).Post(disbursementURL + "delete")
 	if resp.IsError() {
 		return entity, errors.New(resp.Status())
 	}
@@ -57,9 +34,34 @@ func DeleteAwards(awards budget.Awards) (budget.Awards, error) {
 	}
 	return entity, nil
 }
-func UpdateAwards(awards budget.Awards) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().SetBody(awards).Post(awardsURL + "update")
+func UpdateDisbursement(disbursement budget.Disbursement) (budget.Disbursement, error) {
+	entity := budget.Disbursement{}
+
+	resp, _ := api.Rest().SetBody(disbursement).Post(disbursementURL + "update")
+	if resp.IsError() {
+		return entity, errors.New(resp.Status())
+	}
+	err := api.JSON.Unmarshal(resp.Body(), &entity)
+	if err != nil {
+		return entity, errors.New(resp.Status())
+	}
+	return entity, nil
+}
+func GetDisbursement(disbursementId string) (budget.Disbursement, error) {
+	entity := budget.Disbursement{}
+	resp, _ := api.Rest().Get(disbursementURL + "get/" + disbursementId)
+	if resp.IsError() {
+		return entity, errors.New(resp.Status())
+	}
+	err := api.JSON.Unmarshal(resp.Body(), &entity)
+	if err != nil {
+		return entity, errors.New(resp.Status())
+	}
+	return entity, nil
+}
+func GetDisbursements(disbursementId string) ([]budget.Disbursement, error) {
+	entity := []budget.Disbursement{}
+	resp, _ := api.Rest().Get(disbursementURL + "get/" + disbursementId)
 	if resp.IsError() {
 		return entity, errors.New(resp.Status())
 	}

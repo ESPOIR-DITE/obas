@@ -16,7 +16,7 @@ type Budget struct {
 	Description string    `json:"description"`
 	Date        time.Time `json:"date"`
 }
-type Disbusement struct {
+type Disbursement struct {
 	Id              string    `json:"id"`
 	AwardId         string    `json:"awardId"`
 	DisbusementType string    `json:"disbusementType"`

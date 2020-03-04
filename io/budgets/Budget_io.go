@@ -6,11 +6,11 @@ import (
 	"obas/domain/budget"
 )
 
-const awardsURL = api.BASE_URL + "/awards/"
+const budgetURL = api.BASE_URL + "/budget/"
 
-func CreateAwards(awards budget.Awards) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().SetBody(awards).Post(awardsURL + "create")
+func CreateBudget(budgetObj budget.Budget) (budget.Budget, error) {
+	entity := budget.Budget{}
+	resp, _ := api.Rest().SetBody(budgetObj).Post(budgetURL + "create")
 	if resp.IsError() {
 		return entity, errors.New(resp.Status())
 	}
@@ -20,9 +20,33 @@ func CreateAwards(awards budget.Awards) (budget.Awards, error) {
 	}
 	return entity, nil
 }
-func GetAward(awardId string) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().Get(awardsURL + "read/" + awardId)
+func GetBudget(budgetId string) (budget.Budget, error) {
+	entity := budget.Budget{}
+	resp, _ := api.Rest().Get(budgetURL + "get/" + budgetId)
+	if resp.IsError() {
+		return entity, errors.New(resp.Status())
+	}
+	err := api.JSON.Unmarshal(resp.Body(), &entity)
+	if err != nil {
+		return entity, errors.New(resp.Status())
+	}
+	return entity, nil
+}
+func GetBudgets() ([]budget.Budget, error) {
+	entity := []budget.Budget{}
+	resp, _ := api.Rest().Get(budgetURL + "all")
+	if resp.IsError() {
+		return entity, errors.New(resp.Status())
+	}
+	err := api.JSON.Unmarshal(resp.Body(), &entity)
+	if err != nil {
+		return entity, errors.New(resp.Status())
+	}
+	return entity, nil
+}
+func DeleteBudget(budgetObj budget.Budget) (budget.Budget, error) {
+	entity := budget.Budget{}
+	resp, _ := api.Rest().SetBody(budgetObj).Post(budgetURL + "delete")
 	if resp.IsError() {
 		return entity, errors.New(resp.Status())
 	}
@@ -33,33 +57,9 @@ func GetAward(awardId string) (budget.Awards, error) {
 	return entity, nil
 }
 
-func GetAwards() ([]budget.Awards, error) {
-	entity := []budget.Awards{}
-	resp, _ := api.Rest().Get(awardsURL + "all")
-	if resp.IsError() {
-		return entity, errors.New(resp.Status())
-	}
-	err := api.JSON.Unmarshal(resp.Body(), &entity)
-	if err != nil {
-		return entity, errors.New(resp.Status())
-	}
-	return entity, nil
-}
-func DeleteAwards(awards budget.Awards) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().SetBody(awards).Post(awardsURL + "delete")
-	if resp.IsError() {
-		return entity, errors.New(resp.Status())
-	}
-	err := api.JSON.Unmarshal(resp.Body(), &entity)
-	if err != nil {
-		return entity, errors.New(resp.Status())
-	}
-	return entity, nil
-}
-func UpdateAwards(awards budget.Awards) (budget.Awards, error) {
-	entity := budget.Awards{}
-	resp, _ := api.Rest().SetBody(awards).Post(awardsURL + "update")
+func UpdateBudget(budgetObj budget.Budget) (budget.Budget, error) {
+	entity := budget.Budget{}
+	resp, _ := api.Rest().SetBody(budgetObj).Post(budgetURL + "update")
 	if resp.IsError() {
 		return entity, errors.New(resp.Status())
 	}

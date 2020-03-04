@@ -37,3 +37,9 @@ func TestGetAllCourseSubject(t *testing.T) {
 	fmt.Println(" The Results", result)
 	assert.NotNil(t, result)
 }
+func TestGetCourseSubjects(t *testing.T) {
+	result, err := GetCourseSubjects("CCIT-EHMQR")
+	assert.Nil(t, err)
+	fmt.Println(" The Results", result)
+	assert.NotNil(t, result)
+}
